@@ -14,7 +14,7 @@ int main()
     char str2[18]= "some NUMmbers12345";
     int length2 = 18;
     char str3[33] = "Does it reverse \n\0\t correctly?";
-    int length3 = 33
+    int length3 = 33;
     /*Read array size*/
     /*/printf("Enter the length of the array: ");
     scanf("%d",&size);
