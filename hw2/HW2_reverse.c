@@ -37,13 +37,13 @@ int main()
              printf("\nLength is incorrect");
          else if (value == 0)
                  printf("\nArray is reversed correctly");*/
-   // printf("\nThis is a string.");
+   /*This is a string.*/
     char value1 = reverse(str1,length1);
-   // printf("\nsome NUMmbers12345");
+   /*some NUMmbers12345*/
     char value2 = reverse(str2,length2);
-   // printf("\nDoes it reverse \n\0\t correctly?");
+   /*Does it reverse \n\0\t correctly?*/
     char value3 = reverse(str3,length3);
-
+    printf("\n");
     return 1;
 }
 
