@@ -37,11 +37,11 @@ int main()
              printf("\nLength is incorrect");
          else if (value == 0)
                  printf("\nArray is reversed correctly");*/
-    printf("\nThis is a string.");
+   // printf("\nThis is a string.");
     char value1 = reverse(str1,length1);
-    printf("\nsome NUMmbers12345");
+   // printf("\nsome NUMmbers12345");
     char value2 = reverse(str2,length2);
-    printf("Does it reverse \n\0\t correctly?");
+   // printf("\nDoes it reverse \n\0\t correctly?");
     char value3 = reverse(str3,length3);
 
     return 1;
@@ -54,8 +54,8 @@ char reverse(char *str, int length)
 {
     int j=0;
     char temp;
-    char *first = str + 1;
-    char *last = str + length;
+    char *first = str;
+    char *last = str + length-1;
 
     if(*first == '\0')/*Check for empty array*/
        return '1';
@@ -71,7 +71,7 @@ char reverse(char *str, int length)
                  }
 
                printf("\nThe reverse array is as follows:");
-               for(j=1;j<=length;j++)
+               for(j=0;j<length;j++)
                  {
                   printf("%c",*(str+j));
                  }
