@@ -11,10 +11,37 @@ int main()
 
     char str1[17]= "This is a string.";
     int length1 = 17;
+    
+    printf("\nFirst String is: ");
+    for(i=0;i<length1;i++)
+       {
+        printf("%x",*(str1+i));
+       }
+    /*This is a string.*/
+    char value1 = reverse(str1,length1); 
+
     char str2[18]= "some NUMmbers12345";
     int length2 = 18;
-    char str3[33] = "Does it reverse \n\0\t correctly?";
-    int length3 = 33;
+    printf("\n\nSecond String is: ");
+    for(i=0;i<length2;i++)
+       {
+        printf("%x",*(str2+i));
+       }
+    /*some NUMmbers12345*/
+    char value2 = reverse(str2,length2);
+    
+    char str3[30] = "Does it reverse \n\0\t correctly?";
+    int length3 = 30;
+    printf("\n\nThird String is: ");
+
+    for(i=0;i<length3;i++)
+       {
+        printf("%x",*(str3+i));
+       }
+    /*Does it reverse \n\0\t correctly?*/
+    char value3 = reverse(str3,length3);
+    printf("\n");
+
     /*Read array size*/
     /*/printf("Enter the length of the array: ");
     scanf("%d",&size);
@@ -27,7 +54,7 @@ int main()
     /*Read array*/
     /*printf("Enter the array: ");
     for(i = 0; i<=size;i++)
-      {scanf("%c",&str[i]);}
+      {scanf("%x",&str[i]);}
     */
    /* value = reverse(str,size);
 
@@ -37,13 +64,7 @@ int main()
              printf("\nLength is incorrect");
          else if (value == 0)
                  printf("\nArray is reversed correctly");*/
-   /*This is a string.*/
-    char value1 = reverse(str1,length1);
-   /*some NUMmbers12345*/
-    char value2 = reverse(str2,length2);
-   /*Does it reverse \n\0\t correctly?*/
-    char value3 = reverse(str3,length3);
-    printf("\n");
+
     return 1;
 }
 
@@ -73,7 +94,7 @@ char reverse(char *str, int length)
                printf("\nThe reverse array is as follows:");
                for(j=0;j<length;j++)
                  {
-                  printf("%c",*(str+j));
+                  printf("%x",*(str+j));
                  }
                return 0;}
 }
