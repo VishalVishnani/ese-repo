@@ -1,3 +1,17 @@
+
+/************************************************
+* Authors : Vishal Vishnani, Virag Gada
+* Date : 02/12/2017
+* 
+* File : data.h
+* Description : Header file for data manipuation
+*               -big_to_little32() 
+*               -little_to_big32()
+*               -my_atoi()
+*               -my_itoa()
+*               -print_memory()
+*               -stringLength()
+*************************************************/
 #ifndef DATA_H_INCLUDED
 #define DATA_H_INCLUDED
 
