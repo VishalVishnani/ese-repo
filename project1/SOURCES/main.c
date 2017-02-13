@@ -1,3 +1,13 @@
+/************************************************
+* Authors : Vishal Vishnani, Virag Gada
+* Date : 02/12/2017
+* 
+* File : main.c
+* Description : Source file for project1
+*               -project_1_report()
+*               -compile time switch
+*************************************************/
+
 
 #include<stdio.h>
 #include<stdlib.h>
