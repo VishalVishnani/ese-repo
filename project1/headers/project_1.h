@@ -1,3 +1,16 @@
+
+
+/*************************************************
+* Authors : Vishal Vishnani, Virag Gada
+* Date : 02/12/2017
+* 
+* File : project_1.h
+* Description : Header file for testing functions
+*               - project_1_report()
+*               - test_data1()
+*               - test_data2()
+*               - test_memory()
+**************************************************/
 #ifndef PROJECT_1_H_INCLUDED
 #define PROJECT_1_H_INCLUDED
 
