@@ -40,8 +40,7 @@ endif
 	 build-lib direct_link dependencies preprocess asmfile
 
 #Default make command builds executable file project.out
-all: 
-	project.out
+all: project.out
 
 #Creates an assembly output of all files
 asmfile : $(SRCS)
