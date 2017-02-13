@@ -1,3 +1,16 @@
+
+
+/**************************************************
+* Authors : Vishal Vishnani, Virag Gada
+* Date : 02/12/2017
+* 
+* File : memory.h
+* Description : Header file for memory manipuation
+*               -my_memmove() 
+*               -my_memset()
+*               -my_memzero()
+*               -my_reverse()
+***************************************************/
 #ifndef MEMORY_H_INCLUDED
 #define MEMORY_H_INCLUDED
 
