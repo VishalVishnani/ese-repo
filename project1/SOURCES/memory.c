@@ -1,3 +1,16 @@
+/**************************************************
+* Authors : Vishal Vishnani, Virag Gada
+* Date : 02/12/2017
+* 
+* File : memory.c
+* Description : Source file for memory manipuation
+*               -my_memmove() 
+*               -my_memset()
+*               -my_memzero()
+*               -my_reverse()
+***************************************************/
+
+
 #include<stdio.h>
 #include<stdint.h>
 #include "memory.h"
