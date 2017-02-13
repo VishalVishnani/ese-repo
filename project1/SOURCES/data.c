@@ -1,3 +1,18 @@
+
+/************************************************
+* Authors : Vishal Vishnani, Virag Gada
+* Date : 02/12/2017
+* 
+* File : data.c
+* Description : Source file for data manipuation
+*               -big_to_little32() 
+*               -little_to_big32()
+*               -my_atoi()
+*               -my_itoa()
+*               -print_memory()
+*               -stringLength()
+*************************************************/
+
 #include<stdio.h>
 #include<stdint.h>
 #include"data.h"
