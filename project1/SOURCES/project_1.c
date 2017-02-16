@@ -16,6 +16,7 @@
 #include"data.h"
 #include"memory.h"
 #include"project_1.h"
+#include"test.h"
 
 #ifdef FRDM
  #define printf(...)
@@ -125,6 +126,16 @@ void test_memory(void)
     print_memory(start,32);
 }
 
+void test_endian(void)
+{
+ uint8_t val;
+ int32_t test_data = 0x00000001;
+ val = test_littlebig(test_data);
+ if(val == 0)
+   printf("/nBig Endian");
+ else printf("/nLittle Endian");
+}
+
 /* The function is used to call test_data1(),
  * test_data2() and test_memory() to test
  * functions in data.c and memory.c*/
@@ -133,4 +144,5 @@ void project_1_report(void)
     test_data1();
     test_data2();
     test_memory();
+    test_endian();
 }
