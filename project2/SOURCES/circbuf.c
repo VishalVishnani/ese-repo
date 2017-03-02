@@ -1,8 +1,14 @@
-#include <stdlib.h>
+* circbuff.c
+ *
+ *  Created on: Feb 28, 2017
+ *      Author: vishal virag
+ */
+//include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
+#include "circbuff.h"
 
-typedef enum buffer_states{
+/*typedef enum buffer_states{
     full=5,
     empty,
     available
@@ -20,82 +26,82 @@ typedef struct CircBuf_t{
 CircBuff *CircBuff1;
 uint8_t  * c_buffer;
 uint8_t length_buff;
-
-uint8_t cbuffer_full()
+*/
+uint8_t cbuffer_full(CircBuff *CircBuffTR)
 {
-    if((CircBuff1->count) ==(CircBuff1->length)){
-        (CircBuff1->buff_states)=full;
-        printf("\n%d",CircBuff1->buff_states);
-        return (CircBuff1->buff_states);
+    if((CircBuffTR->count) ==(CircBuffTR->length)){
+        (CircBuffTR->buff_states)=full;
+        printf("\n%d",CircBuffTR->buff_states);
+        return (CircBuffTR->buff_states);
     }
     else{
-        (CircBuff1->buff_states)=available;
-        return (CircBuff1->buff_states);
+        (CircBuffTR->buff_states)=available;
+        return (CircBuffTR->buff_states);
     }
 
 }
 
-uint8_t cbuffer_empty()
+uint8_t cbuffer_empty(CircBuff *CircBuffTR)
 {
-    if(((CircBuff1->head)==(CircBuff1->tail)) && ((CircBuff1->count)==0)){
-        (CircBuff1->buff_states)=empty;
-        return (CircBuff1->buff_states);
+    if(((CircBuffTR->head)==(CircBuffTR->tail)) && ((CircBuffTR->count)==0)){
+        (CircBuffTR->buff_states)=empty;
+        return (CircBuffTR->buff_states);
     }
     else{
-        (CircBuff1->buff_states)=available;
-        return (CircBuff1->buff_states);
+        (CircBuffTR->buff_states)=available;
+        return (CircBuffTR->buff_states);
     }
 }
 
-uint8_t cbuffer_add(uint8_t * data,uint8_t values_add)
+uint8_t cbuffer_add(CircBuff *CircBuffTR,uint8_t * data,uint8_t values_add)
 {
-   if(((CircBuff1->head)==(CircBuff1->tail)) && ((CircBuff1->count)>(CircBuff1->length))){
-        (CircBuff1->count)=0;
+   if(((CircBuffTR->head)==(CircBuffTR->tail)) && ((CircBuffTR->count)>(CircBuffTR->length))){
+        (CircBuffTR->count)=0;
    }
 
     while(values_add){
-        if((CircBuff1->count)!=(CircBuff1->length)){
-            *(CircBuff1->head)=*data;
-            (CircBuff1->head)++;
-            (CircBuff1->count)++;
-            if((CircBuff1->head)>((CircBuff1->buffer)+(CircBuff1->length)-1)){
-                (CircBuff1->head)=(CircBuff1->buffer);
+        if((CircBuffTR->count)!=(CircBuffTR->length)){
+            *(CircBuffTR->head)=*data;
+            (CircBuffTR->head)++;
+            (CircBuffTR->count)++;
+            if((CircBuffTR->head)>((CircBuffTR->buffer)+(CircBuffTR->length)-1)){
+                (CircBuffTR->head)=(CircBuffTR->buffer);
             }
-        (CircBuff1->buff_states)=available;
-        //return (CircBuff1->buff_states);
+        (CircBuffTR->buff_states)=available;
+        //return (CircBuffTR->buff_states);
         }
         else{
-            (CircBuff1->buff_states)=full;
-          //  return (CircBuff1->buff_states);
+            (CircBuffTR->buff_states)=full;
+          //  return (CircBuffTR->buff_states);
         }
         data++;
         values_add--;
     }
 }
 
-uint8_t cbuffer_peak(uint8_t search_term)
+uint8_t cbuffer_peak(CircBuff * CircbuffTR,uint8_t search_term)
 {
     uint8_t value_peak;
-    value_peak= *((CircBuff1->buffer)+search_term-1);
+    value_peak= *((CircBuffTR->buffer)+search_term-1);
     return value_peak;
 }
 
-uint8_t cbuffer_remove(uint8_t values_remove)
+uint8_t cbuffer_remove(CircBuff * CircBuffTR,uint8_t values_remove)
 {
     uint8_t remove_data;
     while(values_remove){
-        if((CircBuff1->count)!=0){
-            remove_data= *(CircBuff1->tail);
-            *(CircBuff1->tail)=0;
-            (CircBuff1->tail)++;
-            (CircBuff1->count)--;
-            if((CircBuff1->tail)>((CircBuff1->buffer)+(CircBuff1->length)-1)){
-                (CircBuff1->tail)=(CircBuff1->buffer);
+        if((CircBuffTR->count)!=0){
+            remove_data= *(CircBuffTR->tail);
+            *(CircBuffTR->tail)=0;
+            (CircBuffTR->tail)++;
+            (CircBuffTR->count)--;
+            if((CircBuffTR->tail)>((CircBuffTR->buffer)+(CircBuffTR->length)-1)){
+                (CircBuffTR->tail)=(CircBuffTR->buffer);
             }
         //return remove_data;
         }
         else{
-            (CircBuff1->buff_states)=empty;
+            (CircBuffTR->buff_states)=empty;
           //  return (CircBuff1->buff_states);
         }
         values_remove--;
@@ -106,16 +112,22 @@ uint8_t cbuffer_remove(uint8_t values_remove)
 void cbuffer_memoryallocate()
 {
 
-    CircBuff1=(CircBuff *) calloc(1,sizeof(CircBuff1));
-    c_buffer= (uint8_t *) calloc(length_buff,sizeof(CircBuff1));
-}
-void cbuffer_destroy()
-{
-    free(CircBuff1);
-    free(c_buffer);
+    CircBuffT=(CircBuff *) calloc(1,sizeof(CircBuffT));
+    CircBuffR=(CircBuff *) calloc(1,sizeof(CircBuffR));
+    c_bufferT= (uint8_t *) calloc(length_buff,sizeof(CircBuffT));
+    c_bufferR= (uint8_t *) calloc(length_buff,sizeof(CircBuffR));
 }
 
-int main()
+void cbuffer_destroy()
+{
+    free(CircBuffT);
+    free(CircBuffR);
+    free(c_bufferT);
+    free(c_bufferR);
+
+}
+
+/*int main()
 {
     printf("Enter the size of circular buffer:\n");
     scanf("%d",&length_buff);
@@ -184,5 +196,9 @@ int main()
     //cbuffer_full();
     //cbuffer_empty();
     cbuffer_destroy();
-}
+}*/
+
+
+
+
 
