@@ -10,6 +10,9 @@
 #include<stdio.h>
 #include<stdint.h>
 #include "memory.h"
+#include <stdarg.h>
+#include <stddef.h>
+#include <setjmp.h>
 #include <cmocka.h>
 
 uint32_t length = 10;
@@ -102,17 +105,17 @@ void test_reverse_even(void **state)
 
 void test_reverse_character(void **state)
 {
-	uint8_t chr_set[256] = 0;
-	uint8_t chr_check[256] = 0;
-	uint8_t i;
+	uint8_t chr_set[256];
+	uint8_t chr_check[256];
+	uint16_t i;
 
 	for(i=0;i<256;i++)
 	{
-		chr_set[i] = (char)i;
-		chr_check[i] = (char)i;
+		chr_set[i] = i;
+		chr_check[i] = i;
 	}
 
-	uint8_t src = &chr_set;
+	uint8_t *src = chr_set;
 	enum memory_status status = my_reverse(src,256);
 
 	for(i=0;i<256;i++)
@@ -124,7 +127,29 @@ void test_reverse_character(void **state)
 		}
 	}
 
-	if(i == 255)
+	if(i == 256)
 		assert_int_equal(status, SUCCESSFUL_TRANSFER);
 	else assert_int_equal(status, TRANSFER_FAILED);
 }
+
+
+int main(int argc, char **argv)
+{
+  const struct CMUnitTest tests[] = {
+    cmocka_unit_test(test_memmove_invalid_pointer),
+    cmocka_unit_test(test_memmove_no_overlap),	
+    cmocka_unit_test(test_memmove_dst_in_src),
+    cmocka_unit_test(test_memmove_src_in_dst),
+	cmocka_unit_test(test_memset_invalid_pointer),
+	cmocka_unit_test(test_memset_valid),
+	cmocka_unit_test(test_memzero_invalid_pointer),
+	cmocka_unit_test(test_memzero_valid),
+	cmocka_unit_test(test_reverse_invalid_pointer),
+	cmocka_unit_test(test_reverse_odd),
+	cmocka_unit_test(test_reverse_even),
+	cmocka_unit_test(test_reverse_character),
+  };
+
+  return cmocka_run_group_tests(tests, NULL, NULL);
+}
+
