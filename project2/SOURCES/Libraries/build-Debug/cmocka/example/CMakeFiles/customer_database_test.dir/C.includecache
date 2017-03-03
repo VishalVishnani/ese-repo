@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/vishal/Documents/Unit Test/Libraries/cmocka/example/customer_database.c
+stddef.h
+-
+stdio.h
+-
+database.h
+-
+
+/home/vishal/Documents/Unit Test/Libraries/cmocka/example/customer_database_test.c
+stdarg.h
+-
+stddef.h
+-
+setjmp.h
+-
+cmocka.h
+-
+database.h
+-
+
+/home/vishal/Documents/Unit Test/Libraries/cmocka/example/database.h
+
+/home/vishal/Documents/Unit Test/Libraries/cmocka/include/cmocka.h
+
