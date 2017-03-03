@@ -1,6 +1,6 @@
 /**************************************************
 * Authors : Vishal Vishnani, Virag Gada
-* Date : 02/12/2017
+* Date : 03/01/2017
 * 
 * File : memory.c
 * Description : Source file for memory manipuation
@@ -30,19 +30,19 @@ int8_t my_memmove(uint8_t * src,uint8_t * dst, uint32_t length)
     	return INVALID_MEMORY_POINTER;
     }
     /*Check for the memory overlap condition*/
-    if((src>dst) || dst>(src + length-1))
+    if(src>dst)
     {
-        for(i=0;i<length;i++)
+        for(i=1;i<=length;i++)
         {
-            *(dst+i)= *(src + i);
+            *(dst+i-1)= *(src + i-1);
         }
         return SUCCESSFUL_TRANSFER;
     }
-    else if(dst>src && dst<=(src + length -1))
+    else if(dst>src)
     {
-        for(i=length-1;i>=0;i--)
+        for(i=length;i>0;i--)
         {
-            *(dst+i)= *(src + i);
+            *(dst+i-1)= *(src + i-1);
         }
         return SUCCESSFUL_TRANSFER;
     }
@@ -163,7 +163,7 @@ int8_t my_reverse(uint8_t * src,uint32_t length)
          	first++;
          	last--;
      	}
-     return SUCCESSFUL_TRANSFER;
+		return SUCCESSFUL_TRANSFER;
     }
 
 }
