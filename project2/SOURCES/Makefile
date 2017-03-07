@@ -15,6 +15,34 @@ $(SUBDIRS) :
 	fi	
 endif
 
+ifeq ($(TEST),ALL)
+
+TEST_SRCS = \
+	test_project2.c
+
+endif
+
+ifeq ($(TEST),DATA)
+
+TEST_SRCS = \
+	test_data.c
+
+endif
+
+ifeq ($(TEST),MEMORY)
+
+TEST_SRCS = \
+	test_memory.c
+
+endif
+
+ifeq ($(TEST),CIRCBUFF)
+
+TEST_SRCS = \
+	test_circbuff.c
+
+endif
+
 
 THIRD_PARTY_DIR = Libraries
 CMOCKA_INCLUDE_DIR = $(THIRD_PARTY_DIR)/build-Debug/include
@@ -32,6 +60,8 @@ CFLAGS += -I $(CMOCKA_INCLUDE_DIR)
 #
 # library
 #
+
+
 LIB_SRCS = \
 	circbuff.c memory.c data.c 
 
@@ -52,8 +82,8 @@ EXE = main.out
 #
 # tests
 #
-TEST_SRCS = \
-	test_project2.c
+
+
 
 TEST_OBJS = $(TEST_SRCS:%.c=%.o)
 
@@ -90,3 +120,4 @@ clobber : $(SUBDIRS) clean
 
 
 FORCE :
+
