@@ -13,6 +13,7 @@ LFLAGS=-Wl,-Map=main.map
 #	switchflag=switch_OFF
 #endif
 LOG=LOG_OFF
+PLATFORM=HOST
 #For host machine platform, native compiler and flags
 ifeq ($(PLATFORM),HOST)
 	CC=gcc
