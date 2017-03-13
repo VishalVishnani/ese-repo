@@ -134,7 +134,7 @@ int8_t * my_itoa(int8_t * str, int32_t data, int32_t base)
 {   uint8_t sign = 0;
     uint32_t remainder;
     uint8_t position = 1;
-    //uint16_t length;
+    uint16_t length;
 
     /*Handle signed data*/
     if(data<0)
@@ -171,8 +171,8 @@ int8_t * my_itoa(int8_t * str, int32_t data, int32_t base)
 
     /*Since remainder is stored in reverse order
      *we need to reverse the string*/
-    //length = stringLength(str);
-    //my_reverse((uint8_t*)str,length);
+    length = stringLength(str);
+    my_reverse((uint8_t*)str,length);
     return str;
 }
 
