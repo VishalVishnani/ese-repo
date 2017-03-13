@@ -34,9 +34,9 @@ File structure:
 	7. test_data.c - Source file for unit testing data manipulation functions using cmocka.
 	8. test_memory.c - Source file for unit testing memory manipulation functions using cmocka.
 	9. test_circbuff.c - Source file for unit testing circular buffer functions using cmocka.
-   10. test_project2.c - Source file for unit testing data, memory and circular buffer functions
+	10. test_project2.c - Source file for unit testing data, memory and circular buffer functions
 	   using cmocka.
-   11. main.c – main source file for running the project.
+	11. main.c – main source file for running the project.
 
 * Makefile – Used to make targets with required prerequisites and different compiler options. It consists of compile time switches to switch between platforms thereby making it platform independent.
 
