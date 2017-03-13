@@ -104,7 +104,7 @@ void LED_set(uint8_t value)
 
 
 /*function to send one byte*/
-void UART_send_byte(int8_t data)
+void UART_send_byte(uint8_t data)
 {
 	uint16_t i;
 	for(i=30000;i>0;i--);
