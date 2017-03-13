@@ -1,123 +1,96 @@
-CC = cc
-CFLAGS = -std=c99 -Wall -Werror -g -O0
+include sources.mk
+include Makefile1
 
-#
-# build third-party libraries
-#
-SUBDIRS = Libraries
+#Device determines the platform we are currently on using shell arch command
+DEVICE:=$(shell arch)
 
-ifdef SUBDIRS
-.PHONY : $(SUBDIRS)
-$(SUBDIRS) : 
-	@if [ -d $@ ]; then \
-		$(MAKE) --no-print-directory --directory=$@ \
-			CC=$(CC) CFLAGS="$(CFLAGS)" $(MAKECMDGOALS); \
-	fi	
+LFLAGS=-Wl,-Map=main.map
+
+#switchflag is used to determine whether to turn on/off project by setting switch value from command line
+#switchflag=switch_ON
+
+#ifeq ($(switch),OFF)
+#	switchflag=switch_OFF
+#endif
+LOG=LOG_OFF
+#For host machine platform, native compiler and flags
+ifeq ($(PLATFORM),HOST)
+	CC=gcc
+	CFLAGS=-Wall -Werror -g -O0 -std=c99 -D$(PLATFORM) -D$(LOG)
 endif
 
-ifeq ($(TEST),ALL)
-
-TEST_SRCS = \
-	test_project2.c
-
+#For BeagleBone Black,cross compiler and native compiler with flags respectively 
+ifeq ($(PLATFORM),BBB)
+ ifeq ($(DEVICE),x86_64)
+	CC=arm-linux-gnueabihf-gcc
+	CFLAGS=-mcpu=cortex-a8 -Wall -Werror -g -o0 -std=c99 -D$(PLATFORM) -D$(LOG)
+ else
+	CC=gcc
+	CFLAGS=-mcpu=cortex-a8 -Wall -Werror -g -o0 -std=c99 -D$(PLATFORM) -D$(LOG)
+ endif
 endif
 
-ifeq ($(TEST),DATA)
-
-TEST_SRCS = \
-	test_data.c
-
+#For KL25Z, cross compiler with flags 
+ifeq ($(PLATFORM),FRDM)
+	CC=arm-none-eabi-gcc
+	CFLAGS=-mcpu=cortex-m0plus -Wall -Werror -g -O0 -std=c99 --specs=nosys.specs -D$(PLATFORM) -D$(LOG)  
 endif
 
-ifeq ($(TEST),MEMORY)
+#Phony protection for all targets
+.PHONY : all file.i file.asm compile-all build project.out clean\
+	 build-lib direct_link dependencies preprocess asmfile
 
-TEST_SRCS = \
-	test_memory.c
+#Default make command builds executable file project.out
+all: project.out
 
-endif
+#Creates an assembly output of all files
+asmfile : $(SRCS)
+	$(CC) -I headers $^ -S
 
-ifeq ($(TEST),CIRCBUFF)
+#Creates a preprocessed output of all files 
+preprocess : $(SRCS)
+	$(CC) -I headers $^ -E > file.i
 
-TEST_SRCS = \
-	test_circbuff.c
+#Creates a dependency file for source files
+dependencies: $(SRCS)
+	$(CC) -M -I headers $^ -o project.dep
 
-endif
+#Creates a preprocessed file of corresponding C file
+%.i:%.c
+	$(CC) -I headers -E $^ -o $@ $(CFLAGS)
 
+#Creates an assembly file of corresponding C file
+%.asm:%.c
+	$(CFLAGS) -I headers $^ -S -o $@
 
-THIRD_PARTY_DIR = Libraries
-CMOCKA_INCLUDE_DIR = $(THIRD_PARTY_DIR)/build-Debug/include
-CMOCKA_LIBRARY = $(THIRD_PARTY_DIR)/build-Debug/lib/libcmocka.a
+#Creates an object file of corresponding C file
+%.o:%.c
+	$(CC) $(CFLAGS) -I headers -c $^ -o $@
+	#objdump -g $@
 
-cmocka : $(SUBDIRS)
+#Compiles all the object files without linking
+compile-all : $(OBJS)
+	$(CC) -I headers $^ $(CFLAGS)
 
-CFLAGS += -I $(CMOCKA_INCLUDE_DIR)
+#Compile all the object files and link
+build : $(OBJS)
+	$(CC) $^ $(CFLAGS) -I headers -o build.out $(LFLAGS)
+	size -d build.out 
 
-#
-# quick and dirty build rules to demonstrate testing, not good build
-# system practices.
-#
+#Remove all compiled object,preprocessed output,assembly output,executables and build output files
+clean :
+	rm -rf *.o main.map *.i *.asm *.s *.gch build.out project.out a.out project.dep 0\
+	libproject1.a output libutils.a test-project2.out
 
-#
-# library
-#
+#Creates the executable file
+project.out : $(OBJS)
+	$(CC) $(CFLAGS) -I headers $^ $(LFLAGS) -o $@
+	size -d project.out
 
+#Generates a library of memory.c and data.c into libproject.a archive
+build-lib:memory.c data.c
+	ar cr libproject1.a $^
 
-LIB_SRCS = \
-	circbuff.c memory.c data.c 
-
-LIB_OBJS = $(LIB_SRCS:%.c=%.o)
-
-LIB_HEADERS = $(LIB_SRCS:%.c=%.h)
-
-LIB = libutils.a
-
-#
-# main executable
-#
-EXE_SRCS = main.c
-EXE_OBJS = $(EXE_SRCS:%.c=%.o)
-
-EXE = main.out
-
-#
-# tests
-#
-
-
-
-TEST_OBJS = $(TEST_SRCS:%.c=%.o)
-
-TEST_EXE = test-project2.out
-
-
-#
-# Generic rule to generate objects
-#
-%.o : %.c
-	$(CC) $(CFLAGS) -c -o $@ $<
-
-$(LIB) : $(LIB_OBJS)
-	$(AR) $(ARFLAGS) $@ $^
-
-all : $(LIB) $(EXE)
-
-$(EXE) : $(EXE_OBJS) $(LIB)
-	$(CC) $(CFLAGS) -o $@ $^ -lm
-
-test : $(TEST_EXE)
-	./$(TEST_EXE)
-
-$(TEST_EXE) : $(TEST_SRCS) $(LIB)
-	$(CC) $(CFLAGS) -o $@ $^ $(CMOCKA_LIBRARY) -lm
-
-
-.PHONY : clean
-clean : FORCE
-	-rm -rf *~ *.o $(LIB) $(EXE) $(TEST_EXE) *.dSYM/
-
-.PHONY : clobber
-clobber : $(SUBDIRS) clean
-
-
-FORCE :
-
+#Invoking linker without using GCC
+direct_link:$(OBJS)
+	ld -o output $^ -lc
