@@ -1,0 +1,9 @@
+/home/vishal/Documents/Unit Test/Libraries/build-Debug/lib/pkgconfig/cmocka.pc
+/home/vishal/Documents/Unit Test/Libraries/build-Debug/lib/cmake/cmocka/cmocka-config.cmake
+/home/vishal/Documents/Unit Test/Libraries/build-Debug/lib/cmake/cmocka/cmocka-config-version.cmake
+/home/vishal/Documents/Unit Test/Libraries/build-Debug/include/cmocka.h
+/home/vishal/Documents/Unit Test/Libraries/build-Debug/include/cmocka_pbc.h
+/home/vishal/Documents/Unit Test/Libraries/build-Debug/lib/libcmocka.so.0.4.0
+/home/vishal/Documents/Unit Test/Libraries/build-Debug/lib/libcmocka.so.0
+/home/vishal/Documents/Unit Test/Libraries/build-Debug/lib/libcmocka.so
+/home/vishal/Documents/Unit Test/Libraries/build-Debug/lib/libcmocka.a
