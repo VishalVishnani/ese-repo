@@ -1,48 +1,86 @@
-/* circbuff.c
- *
- *  Created on: Feb 28, 2017
- *      Author: vishal virag
- */
+/*************************************************************************
+* Authors : Vishal Vishnani, Virag Gada
+* Date : 03/12/2017
+*
+* File : circbuff.c
+* Description : Source file for Circular buffer functions
+*               -cbuff_state cbuffer_full(CircBuff *CircBuffTR)
+*               -cbuff_state cbuffer_empty(CircBuff *CircBuffTR)
+*               -cbuff_state cbuffer_add(CircBuff *CircBuffTR,uint8_t * data,uint8_t values_to_add)
+*		-uint8_t cbuffer_peak(CircBuff * CircbuffTR,uint8_t search_term)
+*               -cbuff_state cbuffer_remove(CircBuff * CircBuffTR,uint8_t values_to_remove)
+*		-uint8_t *  cbuffer_memoryAllocate(uint8_t *cbuffer, uint8_t length_buff)
+*		-cbuff_state cbuffer_Destroy(CircBuff *CircBuffTR, uint8_t  *c_bufferTR)
+*		-void cbuffer_init(CircBuff *CircBuffTR)
+***************************************************************************/
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
 #include "circbuff.h"
+#include "logger.h"
+#include "binary_logger.h"
 
 
+#ifdef FRDM
+#include "MKL25Z4.h"
+#endif
+
+
+/*This function checks if buffer is full*/
 cbuff_state cbuffer_full(CircBuff *CircBuffTR)
 {
-	if(CircBuffTR == NULL)
+	/*Return Null pointer error, if CircBuffTR doesn't point to a valid location*/ 
+	if(CircBuffTR == NULL){
+		#ifdef LOG_ON
+			/*Binary logger for log error*/
+			uint8_t nullPointerError[] = "NULL Pointer\n\r";
+			system_log->logID = LOG_ERROR;
+			system_log->LogLength = 14;
+			system_log->Payload = nullPointerError;
+			log_item(system_log);
+		#endif
 		return NULL_POINTER;
-
+	}
+	/*If count value is equal to length, return circular buffer is full*/ 
     if((CircBuffTR->count) == (CircBuffTR->length)){
-        (CircBuffTR->buff_states)=BUFFER_FULL;
-        printf("\n%d",CircBuffTR->buff_states);
+        (CircBuffTR->cbuff_state)=BUFFER_FULL;
+        printf("\n%d",CircBuffTR->cbuff_state);
     }
     else{
-        (CircBuffTR->buff_states)=AVAILABLE;
+		/*If count is less than length, return circular buffer is available*/
+        (CircBuffTR->cbuff_state)=AVAILABLE;
     }
-    return (CircBuffTR->buff_states);
+	/*Return circular buffer is full or available*/ 
+    return (CircBuffTR->cbuff_state);
 }
 
+/*This function checks if buffer is empty*/
 cbuff_state cbuffer_empty(CircBuff *CircBuffTR)
 {
+	/*return null pointer error,if CircBuffTR doesn't point to a valid loaction*/ 
 	if(CircBuffTR == NULL)
 		return NULL_POINTER;
 
+	/*If Count=0, return circular buffer is empty*/
 	if(((CircBuffTR->head)==(CircBuffTR->tail)) && ((CircBuffTR->count)==0)){
-        (CircBuffTR->buff_states)=BUFFER_EMPTY;
+        (CircBuffTR->cbuff_state)=BUFFER_EMPTY;
     }
     else{
-        (CircBuffTR->buff_states)=AVAILABLE;
+		/*If count!=0 return buffer is available*/
+        (CircBuffTR->cbuff_state)=AVAILABLE;
     }
-    return (CircBuffTR->buff_states);
+	/*Return whether buffer is empty or available*/
+    return (CircBuffTR->cbuff_state);
 }
 
+/*This function is used to add elements to circular buffer*/
 cbuff_state cbuffer_add(CircBuff *CircBuffTR,uint8_t * data,uint8_t values_to_add)
 {
+	/*Return null pointer error if CircBuffTR doesn't point to a valid loaction*/
 	if(CircBuffTR == NULL)
 		return NULL_POINTER;
 
+	/*Return no length error,if values to add is 0*/
 	if(values_to_add == 0)
 		return NO_LENGTH;
 
@@ -51,146 +89,113 @@ cbuff_state cbuffer_add(CircBuff *CircBuffTR,uint8_t * data,uint8_t values_to_ad
 	}
 
     while(values_to_add){
+		/*Condition to check if buffer is not full*/
         if((CircBuffTR->count)!=(CircBuffTR->length)){
+			/*Put the data at location pointed by head, then increment head pointer
+              and count value*/
             *(CircBuffTR->head)=*data;
             (CircBuffTR->head)++;
             (CircBuffTR->count)++;
 
+			/*Wrap around, if head is pointing to last location of buffer*/
             if((CircBuffTR->head)>((CircBuffTR->buffer)+(CircBuffTR->length)-1)){
                 (CircBuffTR->head)=(CircBuffTR->buffer);
             }
-            (CircBuffTR->buff_states) = AVAILABLE;
+			/*Return available after adding element in buffer*/
+            (CircBuffTR->cbuff_state) = AVAILABLE;
         }
         else{
-            (CircBuffTR->buff_states) = BUFFER_FULL;
+			/*Return buffer full if values to add is not zero but length is equal to count*/
+            (CircBuffTR->cbuff_state) = BUFFER_FULL;
         }
         data++;
         values_to_add--;
     }
-	return (CircBuffTR->buff_states);
+	/*Return available or buffer full*/
+	return (CircBuffTR->cbuff_state);
 }
 
+
+/*This function is used to check the value present at a particular
+  location of circular buffer*/
 uint8_t cbuffer_peak(CircBuff * CircbuffTR,uint8_t search_term)
 {
-	if(CircBuffTR == NULL)
-			return NULL_POINTER;
+	/*Return null pointer error, if CircbuffTR doesn't point to a valid location*/
+	if(CircbuffTR == NULL)
+		return NULL_POINTER;
 
     uint8_t value_peak;
-    value_peak= *((CircBuffTR->buffer)+search_term-1);
+    value_peak= *((CircbuffTR->buffer)+search_term-1);
+	
+	/*Return the value present at particular location*/
     return value_peak;
 }
 
+/*This function is used to remove elements from circular buffer*/
 cbuff_state cbuffer_remove(CircBuff * CircBuffTR,uint8_t values_to_remove)
 {
+	/*Return Null pointer error if CircbuffTR doesn't point to a valid location*/
 	if(CircBuffTR == NULL)
-			return NULL_POINTER;
 
+		return NULL_POINTER;
+
+	/*Return no length error, if the values to remove is passed as 0*/
 	if(values_to_remove == 0)
-			return NO_LENGTH;
-
-    //uint8_t remove_data;
+		return NO_LENGTH;
+	
+	
     while(values_to_remove){
+		
+		/*Count value checks if buffer is empty*/
         if((CircBuffTR->count)!=0){
-            //remove_data= *(CircBuffTR->tail);
             *(CircBuffTR->tail)=0;
+
+			/*After removing the element from buffer, increment tail pointer
+              and decrement count value*/ 
             (CircBuffTR->tail)++;
             (CircBuffTR->count)--;
+			
+			/*Wrap around if tail points at last location*/
             if((CircBuffTR->tail)>((CircBuffTR->buffer)+(CircBuffTR->length)-1)){
                 (CircBuffTR->tail)=(CircBuffTR->buffer);
             }
-            (CircBuffTR->buff_states) = NO_ERROR;
+			/*Return no error after removing element*/
+            (CircBuffTR->cbuff_state) = NO_ERROR;
         }
         else{
-            (CircBuffTR->buff_states) = BUFFER_EMPTY;
+			/* If values to remove is not 0 but buffer is empty, return buffer empty*/
+            (CircBuffTR->cbuff_state) = BUFFER_EMPTY;
         }
         values_to_remove--;
     }
-    return (CircBuffTR->buff_states);
+    return (CircBuffTR->cbuff_state);
 }
 
-cbuff_state  cbuffer_memoryAllocate(CircBuff *CircBuffTR, uint8_t length_buff)
+/*This function allocates heap memory to buffer*/
+uint8_t *  cbuffer_memoryAllocate(uint8_t *cbuffer, uint8_t length_buff)
 {
-    (CircBuffTR->buffer) = (uint8_t *) calloc(length_buff,sizeof(uint8_t));
-
-    if ((CircBuffTR->buffer) == NULL)
-    	return BUFFER_ALLCATION_FAILURE;
-    else return NO_ERROR;
+	cbuffer = (uint8_t *) calloc(length_buff,sizeof(uint8_t));
+	
+	/*Return the location of circular buffer after allocating memory*/	
+    return cbuffer;
 }
 
-cbuff_state cbuffer_Destroy()
+/*This function is used to free the heap memory allocate to buffer*/
+cbuff_state cbuffer_Destroy(CircBuff *CircBuffTR, uint8_t  *c_bufferTR)
 {
-    free(CircBuffT);
-    free(c_bufferT);
+	free(c_bufferTR);
+	free(CircBuffTR);
+	
+	/*After destroying memory return no error*/
     return NO_ERROR;
 }
 
+
+/*This function is used to initialize circular buffer, to make head,tail
+and buffer point at first location of buffer and initialize count to 0*/
 void cbuffer_init(CircBuff *CircBuffTR)
 {
 	(CircBuffTR->head)=(CircBuffTR->buffer);
 	(CircBuffTR->tail)=(CircBuffTR->buffer);
 	(CircBuffTR->count)=0;
 }
-
-/*int main()
-{
-    printf("Enter the size of circular buffer:\n");
-    scanf("%d",&length_buff);
-    cbuffer_memoryallocate();
-    (CircBuff1->length)=length_buff;
-    uint8_t temp_len=length_buff;
-    printf("Enter the number of values to be add\n");
-    uint8_t values_add;
-    scanf("%d",&values_add);
-    printf("Enter the Values to be added\n");
-    uint8_t temp[50];
-    uint8_t i;
-    for(i=0;i<values_add;i++){
-        scanf("%d",&temp[i]);
-    }
-    uint8_t * data=temp;
-    (CircBuff1->buffer)=(uint8_t *) c_buffer;
-    (CircBuff1->head)=(CircBuff1->buffer);
-    (CircBuff1->tail)=(CircBuff1->buffer);
-    (CircBuff1->count)=0;
-    printf("\n Head: %d",(CircBuff1->head));
-    printf("\n Tail:%d",(CircBuff1->tail));
-    printf("\n Buffer:%d",(CircBuff1->buffer));
-    printf("\n count:%d",(CircBuff1->count));
-    printf("\n length:%d",(CircBuff1->length));
-    cbuffer_add(data,values_add);
-    uint8_t j=0;
-    while(temp_len){
-        printf("\n%x",*(CircBuff1->buffer+j));
-        (temp_len)--;
-        j++;
-    }
-    printf("\n Head: %d",(CircBuff1->head));
-    printf("\n Tail:%d",(CircBuff1->tail));
-    printf("\n Buffer:%d",(CircBuff1->buffer));
-    printf("\n count:%d",(CircBuff1->count));
-    printf("\n length:%d",(CircBuff1->length));
-    uint8_t search_term;
-    printf("\nEnter the item no. to be searched: ");
-    scanf("%d",&search_term);
-    uint8_t value_peak= cbuffer_peak(search_term);
-    printf("The value of that term is %d",value_peak);
-    uint8_t values_remove;
-    printf("\n Enter the number of elements to be removed: ");
-    scanf("%d",&values_remove);
-    cbuffer_remove(values_remove);
-    temp_len=length_buff;
-    j=0;
-    while(temp_len){
-        printf("\n%x",*(CircBuff1->buffer+j));
-        (temp_len)--;
-        j++;
-    }
-    printf("\n Head: %d",(CircBuff1->head));
-    printf("\n Tail:%d",(CircBuff1->tail));
-    printf("\n Buffer:%d",(CircBuff1->buffer));
-    printf("\n count:%d",(CircBuff1->count));
-    printf("\n length:%d",(CircBuff1->length));
-    //cbuffer_full();
-    //cbuffer_empty();
-    cbuffer_destroy();
-}*/
