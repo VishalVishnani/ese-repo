@@ -24,57 +24,61 @@
  return value;
  }*/
 
-void nrf_read_register(uint8_t reg) {
-
-	SPI_write_byte(R_REGISTER | reg);
+uint8_t nrf_read_register(uint8_t reg) {
+	uint8_t val;
+	SPI_write_byte(R_REGISTER | (REGISTER_MASK & reg));
+	SPI_write_byte(DUMMY);
+	val = SPI_read_byte();
+	return val;
 }
 
 void nrf_write_register(uint8_t reg, uint8_t value) {
 
-	SLAVE_SELECT_OFF;
-	SPI_write_byte(W_REGISTER | reg);
+	SLAVE_SELECT_LOW;
+	SPI_write_byte(W_REGISTER | (REGISTER_MASK & reg));
 	SPI_write_byte(value);
-	SLAVE_SELECT_ON;
+	SLAVE_SELECT_HIGH;
 }
 
 uint8_t nrf_read_status() {
 
-	SLAVE_SELECT_OFF;
+	SLAVE_SELECT_LOW;
 	uint8_t value;
-	nrf_read_register(STATUS); //Can send NOP as well to read STATUS
+	value = nrf_read_register(STATUS); //Can send NOP as well to read STATUS
 	SPI_write_byte(DUMMY);
 	value = SPI_read_byte();
-	SLAVE_SELECT_ON;
+	SLAVE_SELECT_HIGH;
 	return value;
 }
 
 void nrf_write_config() {
 
+	SLAVE_SELECT_LOW;
 	uint8_t reg = CONFIG;
 	uint8_t value = CONFIG_PWR_UP | CONFIG_PRIM_RX;
 	nrf_write_register(reg, value);
-	CHIP_DISABLE;
+	SLAVE_SELECT_HIGH;
 }
 
 uint8_t nrf_read_config() {
 
-	SLAVE_SELECT_OFF;
+	SLAVE_SELECT_LOW;
 	uint8_t value;
-	nrf_read_register(CONFIG);
+	value = nrf_read_register(CONFIG);
 	SPI_write_byte(DUMMY);
 	value = SPI_read_byte();
-	SLAVE_SELECT_ON;
+	SLAVE_SELECT_HIGH;
 	return value;
 }
 
 uint8_t nrf_read_rf_setup() {
 
 	uint8_t value;
-	SLAVE_SELECT_OFF;
+	SLAVE_SELECT_LOW;
 	nrf_read_register(RF_SETUP);
 	SPI_write_byte(DUMMY);
 	value = SPI_read_byte();
-	SLAVE_SELECT_ON;
+	SLAVE_SELECT_HIGH;
 	return value;
 }
 
@@ -88,12 +92,12 @@ void nrf_write_rf_setup() {
 
 uint8_t nrf_read_rf_ch() {
 
-	SLAVE_SELECT_OFF;
+	SLAVE_SELECT_LOW;
 	uint8_t value;
 	nrf_read_register(RF_CH);
 	SPI_write_byte(DUMMY);
 	value = SPI_read_byte();
-	SLAVE_SELECT_ON;
+	SLAVE_SELECT_HIGH;
 	return value;
 }
 
@@ -108,7 +112,7 @@ void nrf_write_rf_ch(uint8_t channel) {
 uint8_t * nrf_read_TX_ADDR() {
 
 	//uint8_t TX_Addr_Values[5];
-	SLAVE_SELECT_OFF;
+	SLAVE_SELECT_LOW;
 	uint8_t i;
 	for(i=0;i<5;i++)
 	{
@@ -116,7 +120,7 @@ uint8_t * nrf_read_TX_ADDR() {
 		SPI_write_byte(DUMMY);
 		TX_Addr_Values[i] = SPI_read_byte();;
 	}
-	SLAVE_SELECT_ON;
+	SLAVE_SELECT_HIGH;
 	return TX_Addr_Values;
 }
 
@@ -124,35 +128,35 @@ void nrf_write_TX_ADDR(uint8_t * tx_addr) {
 
 	uint8_t reg = W_REGISTER | TX_ADDR;
 	uint8_t i;
-	SLAVE_SELECT_OFF;
+	SLAVE_SELECT_LOW;
 	SPI_write_byte(W_REGISTER | reg);
 	for(i=0;i<5;i++){
 		SPI_write_byte(*(tx_addr+i));
 	}
-	SLAVE_SELECT_ON;
+	SLAVE_SELECT_HIGH;
 }
 
 uint8_t nrf_read_fifo_status() {
 
-	SLAVE_SELECT_OFF;
+	SLAVE_SELECT_LOW;
 	uint8_t value;
 	nrf_read_register(FIFO_STATUS);
 	SPI_write_byte(DUMMY);
 	value = SPI_read_byte();
-	SLAVE_SELECT_ON;
+	SLAVE_SELECT_HIGH;
 	return value;
 }
 
 void nrf_flush_tx_fifo() {
 
-	SLAVE_SELECT_OFF;
+	SLAVE_SELECT_LOW;
 	SPI_write_byte(FLUSH_TX);
-	SLAVE_SELECT_ON;
+	SLAVE_SELECT_HIGH;
 }
 
 void nrf_flush_rx_fifo() {
 
-	SLAVE_SELECT_OFF;
+	SLAVE_SELECT_LOW;
 	SPI_write_byte(FLUSH_RX);
-	SLAVE_SELECT_ON;
+	SLAVE_SELECT_HIGH;
 }
