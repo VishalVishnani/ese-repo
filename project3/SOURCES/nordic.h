@@ -9,19 +9,22 @@
 #define SOURCES_NORDIC_H_
 
 #include <stdint.h>
+
+#define REGISTER_MASK (0x1F)
+
 //NRF2401 SPI command defines
-#define R_REGISTER				0x00
-#define W_REGISTER				0x20
-#define R_RX_PAYLOAD			0x61
-#define W_TX_PAYLOAD			0xA0
-#define FLUSH_TX				0xE1
-#define FLUSH_RX				0xE2
-#define REUSE_TX_PL				0xE3
-#define ACTIVATE				0x50
-#define R_RX_PL_WID				0x60
-#define W_ACK_PAYLOAD			0xA8
-#define WR__TX_PAYLOAD_NOACK	0xB0
-#define NOP						0xFF
+#define R_REGISTER				(0x00)
+#define W_REGISTER				(0x20)
+#define R_RX_PAYLOAD			(0x61)
+#define W_TX_PAYLOAD			(0xA0)
+#define FLUSH_TX				(0xE1)
+#define FLUSH_RX				(0xE2)
+#define REUSE_TX_PL				(0xE3)
+#define ACTIVATE				(0x50)
+#define R_RX_PL_WID				(0x60)
+#define W_ACK_PAYLOAD			(0xA8)
+#define WR__TX_PAYLOAD_NOACK	(0xB0)
+#define NOP						(0xFF)
 
 /*NRF2401 Register map*/
 #define CONFIG					0x00
@@ -69,7 +72,7 @@ uint8_t TX_Addr_Values[8];
 * uint8_t register - Address of the register to be read
 * uint8_t(return)  - Returned value of the register
 *************************************************************/
-void nrf_read_register(uint8_t reg);
+uint8_t nrf_read_register(uint8_t reg);
 
 /************************************************************
 * nrf_write_register() - Write value to the given register
