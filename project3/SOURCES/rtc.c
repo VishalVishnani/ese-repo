@@ -6,10 +6,9 @@
  */
 
 #include "MKL25Z4.h"
-
+#include "rtc.h"
 void rtc_init(void){
 
-	//seconds_rtc;
 	//Enabling clock to Port D
 	SIM_SCGC5 |= SIM_SCGC5_PORTC_MASK;
 
@@ -42,13 +41,14 @@ void rtc_init(void){
     //Set time compensation parameters. (These parameters can be different for each application)
     RTC_TCR = RTC_TCR_CIR(1) | RTC_TCR_TCR(0xFF);
 
-    //Enable time seconds interrupt for the module and enable its irq.
-    //NVIC->ISER[0]|= RTC_Seconds_IRQn;// && RTC_IRQn;
-    NVIC_EnableIRQ(RTC_Seconds_IRQn);
     RTC_IER |= RTC_IER_TSIE_MASK;
+
+    //Write to Time Seconds Register.
+    RTC_TSR = EPOCH_TIME;
+
     //Enable time counter.
     RTC_SR |= RTC_SR_TCE_MASK;
-    //Write to Time Seconds Register.
-    RTC_TSR = 0xFF;
 
+    //Enable time seconds interrupt for the module and enable its irq.
+    NVIC_EnableIRQ(RTC_Seconds_IRQn);
 }
