@@ -33,27 +33,108 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "spi.h"
+#include "rtc.h"
+#include "data.h"
+#include "circbuff.h"
+#include "binary_logger.h"
+#include "logger.h"
 #include "nordic.h"
+#include "uart_init.h"
+#include <time.h>
+#include <sys/time.h>
+
+#define START_CRITICAL() (__disable_irq())
+#define END_CRITICAL()   (__enable_irq())
 
 static int i = 0;
+uint8_t recieved_data;
+uint8_t recievedDataCount = 0;
+uint8_t length_TXbuff = 200;
+time_t timestamp, result;
+clock_t clockval;
+uint8_t * txaddr_array;
+uint8_t tx_addr_values[5] = { 0xAA, 0xBB, 0xCC, 0xDD, 0xEE };
 
-int main(void)
-{
+/***********************************
+ *Function to handle UART interrupts
+ ************************************/
+void UART0_IRQHandler(void) {
+	START_CRITICAL();
+	/* Check if interrupt is for TX or RX and handle accordingly
+	 * For TX interrupt we take the data from TX buffer and
+	 * sent it to UART to transmit*/
+	if ((UART0_C2 & UART0_C2_TIE_MASK) != 0) {
+		uint8_t data;
+		uint16_t i;
+		while (CircBuffT->count) {
+			data = *(CircBuffT->tail);
+			UART_send_byte(data);
+			cbuffer_remove(CircBuffT, 1);
+			for (i = 1000; i > 0; i--)
+				;
+		}
+		/*Disabling TX interrupt bit*/
+		log_flush();
+		UART0_C2 &= ~UART0_C2_TIE_MASK;
+	}
+
+	/* For RX interrupt check add data to the RX buffer and
+	 * analyse the data to check if it is an alphabet, number,
+	 * punctuation or a miscellaneous characters*/
+	else if (((UART0_C2 & UART0_C2_RIE_MASK) != 0)
+			&& ((UART0_S1 & UART0_S1_RDRF_MASK) != 0)) {
+		uint8_t c = UART_receive_byte();
+		recieved_data = c;
+		recievedDataCount++;
+		cbuffer_add(CircBuffR, &c, 1);
+		UART0_C2 |= UART_C2_TIE_MASK;
+	}
+}
+
+void RTC_Seconds_IRQHandler(void) {
+
+	system_log->Timestamp = RTC_TSR;
+}
+
+int main(void) {
+	/*Create log item*/
+	system_log = create_log_item();
+
+	/*Create and Initialize Transmit Circular Buffer*/
+	CircBuffT = (CircBuff *) calloc(1, sizeof(CircBuff));
+	uint8_t * cbufferT = NULL;
+	(CircBuffT->length) = length_TXbuff;
+	cbufferT = cbuffer_memoryAllocate(cbufferT, length_TXbuff);
+
+	CircBuffT->buffer = cbufferT;
+	cbuffer_init(CircBuffT);
+	rtc_init();
+	UART_initialize();
+
+	//UART0_D = 0xFF;
+
 	SPI_init();
-	//SPI_write_byte(0x55);
-	//uint8_t val = SPI_read_byte();
-    /* This for loop should be replaced. By default this loop allows a single stepping.
-    for (;;) {
-        i++;
-    }
-
-    Never leave main */
-	for(i=0;i<10000;i++);
-	//SPI_write_byte(0x55);
-	//uint8_t val1 = SPI_read_byte();
-	nrf_write_config();
+	nrf_write_config(CONFIG_PWR_UP | CONFIG_PRIM_RX);
 	uint8_t value1 = nrf_read_config();
 
-	while(1);
+	uint8_t value2 = nrf_read_status();
+
+	nrf_write_TX_ADDR(tx_addr_values);
+	txaddr_array = nrf_read_TX_ADDR();
+
+	nrf_write_rf_setup(RF_SETUP_VALUE);
+	uint8_t value3 = nrf_read_rf_setup();
+
+	nrf_write_rf_ch(RF_CHANNEL_VALUE);
+	uint8_t value4 = nrf_read_rf_ch();
+
+	uint8_t value5 = nrf_read_fifo_status();
+
+	rtc_init();
+
+	while (1) {
+	}
+
 	return 0;
 }
+
