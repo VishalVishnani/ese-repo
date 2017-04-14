@@ -7,156 +7,130 @@
 #include "spi.h"
 #include "nordic.h"
 
-#define DUMMY (0xFF)
-
-/*
- uint8_t nrf_read_register(uint8_t reg){
-
- uint8_t value=0;
- uint8_t array[2];
- array[0] = R_REGISTER | reg;
-
- //dummy byte while the MISO writes the data out
- array[1] = DUMMY;
-
- SPI_send_packet(array,2);
- value = SPI_read_byte();
- return value;
- }*/
-
-uint8_t nrf_read_register(uint8_t reg) {
+/*Function to read a NRF register*/
+void nrf_read_register(uint8_t reg) {
 	uint8_t val;
 	SPI_write_byte(R_REGISTER | (REGISTER_MASK & reg));
-	SPI_write_byte(DUMMY);
-	val = SPI_read_byte();
-	return val;
 }
 
+/*Function to write to a NRF register*/
 void nrf_write_register(uint8_t reg, uint8_t value) {
-
-	SLAVE_SELECT_LOW;
+	nrf_chip_enable();
 	SPI_write_byte(W_REGISTER | (REGISTER_MASK & reg));
 	SPI_write_byte(value);
-	SLAVE_SELECT_HIGH;
+	nrf_chip_disable();
 }
 
+/*Function to read NRF STATUS register*/
 uint8_t nrf_read_status() {
-
-	SLAVE_SELECT_LOW;
+	nrf_chip_enable();
 	uint8_t value;
-	value = nrf_read_register(STATUS); //Can send NOP as well to read STATUS
-	SPI_write_byte(DUMMY);
-	value = SPI_read_byte();
-	SLAVE_SELECT_HIGH;
+	nrf_read_register(STATUS); //Can send NOP as well to read STATUS
+	value = SPI_write_byte(DUMMY);
+	nrf_chip_disable();
 	return value;
 }
 
-void nrf_write_config() {
+/*Function to write to the NRF CONFIG register*/
+void nrf_write_config(uint8_t value) {
 
-	SLAVE_SELECT_LOW;
+	nrf_chip_enable();
 	uint8_t reg = CONFIG;
-	uint8_t value = CONFIG_PWR_UP | CONFIG_PRIM_RX;
 	nrf_write_register(reg, value);
-	SLAVE_SELECT_HIGH;
+	nrf_chip_disable();
 }
 
+/*Function to read from NRF CONFIG register*/
 uint8_t nrf_read_config() {
-
-	SLAVE_SELECT_LOW;
+	nrf_chip_enable();
 	uint8_t value;
-	value = nrf_read_register(CONFIG);
-	SPI_write_byte(DUMMY);
-	value = SPI_read_byte();
-	SLAVE_SELECT_HIGH;
+	nrf_read_register(CONFIG);
+	value = SPI_write_byte(DUMMY);
+	nrf_chip_disable();
 	return value;
 }
 
+/*Function to read from NRF RF_SETUP register*/
 uint8_t nrf_read_rf_setup() {
 
 	uint8_t value;
-	SLAVE_SELECT_LOW;
+	nrf_chip_enable();
 	nrf_read_register(RF_SETUP);
-	SPI_write_byte(DUMMY);
-	value = SPI_read_byte();
-	SLAVE_SELECT_HIGH;
+	value = SPI_write_byte(DUMMY);
+	nrf_chip_disable();
 	return value;
 }
 
-void nrf_write_rf_setup() {
+/*Function to write to the NRF RF_SETUP register*/
+void nrf_write_rf_setup(uint8_t value){
 
 	uint8_t reg = W_REGISTER | RF_SETUP;
-	//RF Power in -6dbm mode
-	uint8_t value = 0x0D;
+	nrf_chip_enable();
 	nrf_write_register(reg, value);
+	nrf_chip_disable();
 }
 
+/*Function to read from NRF RF_CH register*/
 uint8_t nrf_read_rf_ch() {
-
-	SLAVE_SELECT_LOW;
+	nrf_chip_enable();
 	uint8_t value;
 	nrf_read_register(RF_CH);
-	SPI_write_byte(DUMMY);
-	value = SPI_read_byte();
-	SLAVE_SELECT_HIGH;
+	value = SPI_write_byte(DUMMY);
+	nrf_chip_disable();
 	return value;
 }
 
+/*Function to write to the NRF RF_CH register*/
 void nrf_write_rf_ch(uint8_t channel) {
 
 	uint8_t reg = W_REGISTER | RF_CH;
-	//set the rf channel as 76
-	uint8_t value = 0x4C;
-	nrf_write_register(reg, value);
+	nrf_write_register(reg, channel);
 }
 
+/*Function to read from NRF TX_ADDR register*/
 uint8_t * nrf_read_TX_ADDR() {
-
-	//uint8_t TX_Addr_Values[5];
-	SLAVE_SELECT_LOW;
+	nrf_chip_enable();
 	uint8_t i;
+	nrf_read_register(TX_ADDR);
 	for(i=0;i<5;i++)
 	{
-		nrf_read_register(TX_ADDR);
-		SPI_write_byte(DUMMY);
-		TX_Addr_Values[i] = SPI_read_byte();;
+		TX_Addr_Values[i] = SPI_write_byte(DUMMY);
 	}
-	SLAVE_SELECT_HIGH;
+	nrf_chip_disable();
 	return TX_Addr_Values;
 }
 
+/*Function to write to the NRF TX_ADDR register*/
 void nrf_write_TX_ADDR(uint8_t * tx_addr) {
 
 	uint8_t reg = W_REGISTER | TX_ADDR;
 	uint8_t i;
-	SLAVE_SELECT_LOW;
+	nrf_chip_enable();
 	SPI_write_byte(W_REGISTER | reg);
-	for(i=0;i<5;i++){
-		SPI_write_byte(*(tx_addr+i));
-	}
-	SLAVE_SELECT_HIGH;
+	SPI_send_packet(tx_addr,5);
+	nrf_chip_disable();
 }
 
+/*Function to read from NRF FIFO_STATUS register*/
 uint8_t nrf_read_fifo_status() {
-
-	SLAVE_SELECT_LOW;
+	nrf_chip_enable();
 	uint8_t value;
 	nrf_read_register(FIFO_STATUS);
-	SPI_write_byte(DUMMY);
-	value = SPI_read_byte();
-	SLAVE_SELECT_HIGH;
+	value = SPI_write_byte(DUMMY);
+	nrf_chip_disable();
 	return value;
 }
 
+/*Function to flush TX_FIFO buffer*/
 void nrf_flush_tx_fifo() {
-
-	SLAVE_SELECT_LOW;
+	nrf_chip_enable();
 	SPI_write_byte(FLUSH_TX);
-	SLAVE_SELECT_HIGH;
+	nrf_chip_disable();
 }
 
+/*Function to flush RX_FIFO buffer*/
 void nrf_flush_rx_fifo() {
-
-	SLAVE_SELECT_LOW;
+	nrf_chip_enable();
 	SPI_write_byte(FLUSH_RX);
-	SLAVE_SELECT_HIGH;
+	nrf_chip_disable();
 }
