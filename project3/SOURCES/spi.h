@@ -1,9 +1,15 @@
-/*
- * spi.h
- *
- *  Created on: 22-Mar-2017
- *      Author: Virag Gada
- */
+/*************************************************************************
+* Authors : Vishal Vishnani, Virag Gada
+* Date : 04/10/2017
+*
+* File : spi.h
+* Description : Header file for SPI functions
+*            	-void SPI_init()
+*            	-void SPI_read_byte(uint8_t * byte)
+*            	-uint8_t SPI_write_byte(uint8_t byte)
+*            	-void SPI_send_packet(uint8_t * p, size_t length)
+*            	-void SPI_flush()
+***************************************************************************/
 
 #ifndef SOURCES_SPI_H_
 #define SOURCES_SPI_H_
