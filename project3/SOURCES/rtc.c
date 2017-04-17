@@ -7,6 +7,9 @@
 *            	-void rtc_init(void)
 ***************************************************************************/
 
+#include "circbuff.h"
+
+#ifdef FRDM
 #include "MKL25Z4.h"
 #include "rtc.h"
 void rtc_init(void){
@@ -54,3 +57,5 @@ void rtc_init(void){
     //Enable time counter.
     RTC_SR |= RTC_SR_TCE_MASK;
 }
+
+#endif
