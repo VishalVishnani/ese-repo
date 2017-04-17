@@ -7,8 +7,13 @@
 *               - void GPIO_nrf_init()
 *               - void GPIO_led_init()
 ***************************************************************************/
+
+#include "circbuff.h"
 #include <stdint.h>
+
+#ifdef FRDM
 #include "MKL25Z4.h"
+#include "binary_logger.h"
 #include "gpio.h"
 #include "spi.h"
 
@@ -73,3 +78,5 @@ void GPIO_led_init(){
 		log_item(system_log);
 	#endif
 }
+
+#endif
