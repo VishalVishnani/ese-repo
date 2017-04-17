@@ -1,9 +1,11 @@
-/*
- * rtc.c
- *
- *  Created on: 27-Mar-2017
- *      Author: omkar
- */
+/*************************************************************************
+* Authors : Vishal Vishnani, Virag Gada
+* Date : 04/12/2017
+*
+* File : rtc.c
+* Description : Source file for RTC initialization functions
+*            	-void rtc_init(void)
+***************************************************************************/
 
 #include "MKL25Z4.h"
 #include "rtc.h"
@@ -15,7 +17,6 @@ void rtc_init(void){
 	//Provide clock to SPI0
 	SIM_SCGC6 |= SIM_SCGC6_RTC_MASK;
 
-	//
 	SIM_CLKDIV1 = ( SIM_CLKDIV1_OUTDIV1(0)| SIM_CLKDIV1_OUTDIV4(1) );
 	//Enable the internal reference clock. MCGIRCLK is active.
 	MCG_C1 |= MCG_C1_IRCLKEN_MASK;
@@ -41,14 +42,15 @@ void rtc_init(void){
     //Set time compensation parameters. (These parameters can be different for each application)
     RTC_TCR = RTC_TCR_CIR(1) | RTC_TCR_TCR(0xFF);
 
+    //Enable seconds interrupt
     RTC_IER |= RTC_IER_TSIE_MASK;
-
-    //Write to Time Seconds Register.
-    RTC_TSR = EPOCH_TIME;
-
-    //Enable time counter.
-    RTC_SR |= RTC_SR_TCE_MASK;
 
     //Enable time seconds interrupt for the module and enable its irq.
     NVIC_EnableIRQ(RTC_Seconds_IRQn);
+
+    //Write to Time Seconds Register.
+    RTC_TSR = TIME_STAMP - ADJUSTMENT; //Epoch Time
+
+    //Enable time counter.
+    RTC_SR |= RTC_SR_TCE_MASK;
 }
