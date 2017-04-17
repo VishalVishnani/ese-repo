@@ -1,10 +1,12 @@
-/*
- * gpio.c
- *
- *  Created on: Apr 12, 2017
- *      Author: Virag Gada
- */
-
+/*************************************************************************
+* Authors : Vishal Vishnani, Virag Gada
+* Date : 04/12/2017
+*
+* File : gpio.c
+* Description : Source file for GPIO initialize functions
+*               - void GPIO_nrf_init()
+*               - void GPIO_led_init()
+***************************************************************************/
 #include <stdint.h>
 #include "MKL25Z4.h"
 #include "gpio.h"
@@ -41,4 +43,33 @@ void GPIO_nrf_init(){
 
 	//Set as SPI0_MISO
 	PORTD->PCR[3]= ALT_MODE;
+
+	#ifdef LOG_ON
+		/*Binary logger for GPIO_INITIALIZED*/
+		system_log->logID = GPIO_INITIALIZED;
+		system_log->LogLength = 0;
+		system_log->Payload = 0;
+		log_item(system_log);
+	#endif
+}
+
+/*Funcion to initialize RED led*/
+void GPIO_led_init(){
+
+	/*Using port B pin 18 (red LED) as GPIO*/
+	PORTB_PCR18 = PORT_PCR_MUX(0x1);
+
+	/*Setting port B pin 18 as output*/
+	PTB->PDDR |= PIN_18;
+
+	/*Sets the port B pin 18 value to 1*/
+	PTB->PSOR = PIN_18;
+
+	#ifdef LOG_ON
+		/*Binary logger for GPIO_INITIALIZED*/
+		system_log->logID = GPIO_INITIALIZED;
+		system_log->LogLength = 0;
+		system_log->Payload = 0;
+		log_item(system_log);
+	#endif
 }
