@@ -18,6 +18,10 @@
 *				-void nrf_flush_tx_fifo()
 *				-void nrf_flush_rx_fifo()
 ***************************************************************************/
+
+#include "circbuff.h"
+
+#ifdef FRDM
 #include "spi.h"
 #include "nordic.h"
 
@@ -148,3 +152,5 @@ void nrf_flush_rx_fifo() {
 	SPI_write_byte(FLUSH_RX);
 	nrf_chip_disable();
 }
+
+#endif
