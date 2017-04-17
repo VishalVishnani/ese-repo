@@ -2,7 +2,7 @@
 * Authors : Vishal Vishnani, Virag Gada
 * Date : 04/10/2017
 *
-* File : spi.h
+* File : spi.c
 * Description : Source file for SPI functions
 *            	-void SPI_init()
 *            	-void SPI_read_byte(uint8_t * byte)
