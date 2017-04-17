@@ -10,28 +10,13 @@
 *            	-void SPI_send_packet(uint8_t * p, size_t length)
 *            	-void SPI_flush()
 ***************************************************************************/
+#include "circbuff.h"
+#include <stdio.h>
 
-#ifndef SOURCES_RTC_H_
-#define SOURCES_RTC_H_
-
-#include <time.h>
-
-#define ADJUSTMENT (21580)
-
-uint8_t * c_time_string;
-
-/*******************************************
-* SPI_init() - Function to initialize RTC
-********************************************/
-void rtc_init(void);
-
-#endif /* SOURCES_RTC_H_ */
-
-
+#ifdef FRDM
 #include <MKL25Z4.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <stdio.h>
 #include "spi.h"
 #include "gpio.h"
 
@@ -83,3 +68,5 @@ void SPI_send_packet(uint8_t * p, size_t length){
 void SPI_flush(){
 	while(!(SPI0->S & SPI_S_SPTEF_MASK));
 }
+
+#endif
