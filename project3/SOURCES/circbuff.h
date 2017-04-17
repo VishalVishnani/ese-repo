@@ -1,6 +1,6 @@
 /**************************************************************************************************
 * Authors : Vishal Vishnani, Virag Gada
-* Date : 03/12/2017
+* Date : 04/15/2017
 *
 * File : circbuff.h
 * Description : Header file for Circular buffer functions
@@ -14,25 +14,31 @@
 *		-void cbuffer_init(CircBuff *CircBuffTR)
 ***************************************************************************************************/
 
-#define FRDM
-#define LOG_ON
+//#define FRDM
+//#define BBB
+//#define LOG_ON
+//#define PROFILER
+//#define EXTRA_CREDIT
 
 #include <stdint.h>
 
 #ifndef SOURCES_CIRCBUFF_H_
 #define SOURCES_CIRCBUFF_H_
 
+//#define __STATIC_INLINE static inline
+#define START_CRITICAL() (__disable_irq())
+#define END_CRITICAL()   (__enable_irq())
 
 /*Enum used for returning the buffer state*/
 typedef enum buffer_states{
 	NO_ERROR,
 	ERROR,
 	BUFFER_FULL,
-    BUFFER_EMPTY,
+    	BUFFER_EMPTY,
 	NULL_POINTER,
 	NO_LENGTH,
 	BUFFER_ALLCATION_FAILURE,
-    AVAILABLE
+    	AVAILABLE
     }cbuff_state;
 
 /*Circular buffer structure*/
@@ -54,6 +60,25 @@ CircBuff *CircBuffR;
 /*Variable which states the length of buffer*/
 uint8_t  length_buff;
 
+/******************************************************************************
+* This function is used to check if circular buffer is full
+* The return value can be full or available depending on count value
+* CircBuff *CircBuffTR - Pointer which points to circular buffer
+*******************************************************************************/
+__attribute__((always_inline)) static inline cbuff_state inline_cbuffer_full(CircBuff *CircBuffTR){
+	((CircBuffTR->count) == (CircBuffTR->length))?((CircBuffTR->cbuff_state)=BUFFER_FULL):((CircBuffTR->cbuff_state)=AVAILABLE);
+	return (CircBuffTR->cbuff_state);
+}
+
+/*******************************************************************************
+* This function is used to check if circular buffer is empty
+* The return value can be empty or available depending on count value
+* CircBuff CircBuffTR - Pointer which points to circular buffer
+*******************************************************************************/
+__attribute__((always_inline)) static inline cbuff_state inline_cbuffer_empty(CircBuff *CircBuffTR){
+	((CircBuffTR->count) == 0)?((CircBuffTR->cbuff_state)=BUFFER_EMPTY):((CircBuffTR->cbuff_state)=AVAILABLE);
+	return (CircBuffTR->cbuff_state);
+}
 
 /******************************************************************************
 * This function is used to check if circular buffer is full
@@ -64,7 +89,7 @@ cbuff_state cbuffer_full(CircBuff *CircBuffTR);
 
 
 /*******************************************************************************
-* This  function is used to check if circular buffer is empty
+* This function is used to check if circular buffer is empty
 * The return value can be empty or available depending on count value
 * CircBuff CircBuffTR - Pointer which points to circular buffer
 *******************************************************************************/
