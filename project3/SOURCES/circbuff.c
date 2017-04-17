@@ -1,6 +1,6 @@
 /*************************************************************************
 * Authors : Vishal Vishnani, Virag Gada
-* Date : 03/12/2017
+* Date : 04/16/2017
 *
 * File : circbuff.c
 * Description : Source file for Circular buffer functions
@@ -20,7 +20,6 @@
 #include "logger.h"
 #include "binary_logger.h"
 
-
 #ifdef FRDM
 #include "MKL25Z4.h"
 #endif
@@ -28,7 +27,7 @@
 
 /*This function checks if buffer is full*/
 cbuff_state cbuffer_full(CircBuff *CircBuffTR)
-{
+{	START_CRITICAL();
 	/*Return Null pointer error, if CircBuffTR doesn't point to a valid location*/
 	if(CircBuffTR == NULL){
 		#ifdef LOG_ON
@@ -39,24 +38,26 @@ cbuff_state cbuffer_full(CircBuff *CircBuffTR)
 			system_log->Payload = nullPointerError;
 			log_item(system_log);
 		#endif
+		END_CRITICAL();
 		return NULL_POINTER;
 	}
 	/*If count value is equal to length, return circular buffer is full*/
     if((CircBuffTR->count) == (CircBuffTR->length)){
         (CircBuffTR->cbuff_state)=BUFFER_FULL;
-        printf("\n%d",CircBuffTR->cbuff_state);
+        //printf("\n%d",CircBuffTR->cbuff_state);
     }
     else{
 		/*If count is less than length, return circular buffer is available*/
         (CircBuffTR->cbuff_state)=AVAILABLE;
     }
+    END_CRITICAL();
 	/*Return circular buffer is full or available*/
     return (CircBuffTR->cbuff_state);
 }
 
 /*This function checks if buffer is empty*/
 cbuff_state cbuffer_empty(CircBuff *CircBuffTR)
-{
+{	START_CRITICAL();
 	/*return null pointer error,if CircBuffTR doesn't point to a valid loaction*/
 	if(CircBuffTR == NULL)
 		return NULL_POINTER;
@@ -69,20 +70,26 @@ cbuff_state cbuffer_empty(CircBuff *CircBuffTR)
 		/*If count!=0 return buffer is available*/
         (CircBuffTR->cbuff_state)=AVAILABLE;
     }
+	END_CRITICAL();
 	/*Return whether buffer is empty or available*/
     return (CircBuffTR->cbuff_state);
 }
 
 /*This function is used to add elements to circular buffer*/
 cbuff_state cbuffer_add(CircBuff *CircBuffTR,uint8_t * data,uint8_t values_to_add)
-{
+{	START_CRITICAL();
+
 	/*Return null pointer error if CircBuffTR doesn't point to a valid loaction*/
-	if(CircBuffTR == NULL)
+	if(CircBuffTR == NULL){
+		END_CRITICAL();
 		return NULL_POINTER;
+	}
 
 	/*Return no length error,if values to add is 0*/
-	if(values_to_add == 0)
+	if(values_to_add == 0){
+		END_CRITICAL();
 		return NO_LENGTH;
+	}
 
 	if(((CircBuffTR->head)==(CircBuffTR->tail)) && ((CircBuffTR->count)>(CircBuffTR->length))){
 		(CircBuffTR->count)=0;
@@ -112,6 +119,7 @@ cbuff_state cbuffer_add(CircBuff *CircBuffTR,uint8_t * data,uint8_t values_to_ad
         values_to_add--;
     }
 	/*Return available or buffer full*/
+	END_CRITICAL();
 	return (CircBuffTR->cbuff_state);
 }
 
@@ -133,16 +141,18 @@ uint8_t cbuffer_peak(CircBuff * CircbuffTR,uint8_t search_term)
 
 /*This function is used to remove elements from circular buffer*/
 cbuff_state cbuffer_remove(CircBuff * CircBuffTR,uint8_t values_to_remove)
-{
+{	START_CRITICAL();
 	/*Return Null pointer error if CircbuffTR doesn't point to a valid location*/
-	if(CircBuffTR == NULL)
-
+	if(CircBuffTR == NULL){
+		END_CRITICAL();
 		return NULL_POINTER;
+	}
 
 	/*Return no length error, if the values to remove is passed as 0*/
-	if(values_to_remove == 0)
+	if(values_to_remove == 0){
+		END_CRITICAL();
 		return NO_LENGTH;
-
+	}
 
     while(values_to_remove){
 
@@ -168,14 +178,15 @@ cbuff_state cbuffer_remove(CircBuff * CircBuffTR,uint8_t values_to_remove)
         }
         values_to_remove--;
     }
+    END_CRITICAL();
     return (CircBuffTR->cbuff_state);
 }
 
 /*This function allocates heap memory to buffer*/
 uint8_t *  cbuffer_memoryAllocate(uint8_t *cbuffer, uint8_t length_buff)
-{
+{	START_CRITICAL();
 	cbuffer = (uint8_t *) calloc(length_buff,sizeof(uint8_t));
-
+	END_CRITICAL();
 	/*Return the location of circular buffer after allocating memory*/
     return cbuffer;
 }
