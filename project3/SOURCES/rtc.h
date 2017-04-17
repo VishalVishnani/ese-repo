@@ -1,19 +1,19 @@
-/*
- * rtc.h
- *
- *  Created on: 27-Mar-2017
- *      Author: omkar
- */
+/*************************************************************************
+* Authors : Vishal Vishnani, Virag Gada
+* Date : 04/12/2017
+*
+* File : rtc.h
+* Description : Header file for RTC initialization functions
+*            	-void rtc_init(void)
+***************************************************************************/
 
 #ifndef SOURCES_RTC_H_
 #define SOURCES_RTC_H_
 
 #include <time.h>
 
-#define EPOCH_TIME (1492146476)
+#define ADJUSTMENT (21580)
 
-
-time_t current_time;
 uint8_t * c_time_string;
 
 /*******************************************
