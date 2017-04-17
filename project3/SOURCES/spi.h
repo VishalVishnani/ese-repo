@@ -14,6 +14,9 @@
 #ifndef SOURCES_SPI_H_
 #define SOURCES_SPI_H_
 
+#include "circbuff.h"
+
+#ifdef FRDM
 #include <stdint.h>
 #include <stdio.h>
 #include <MKL25Z4.h>
@@ -62,5 +65,6 @@ void SPI_send_packet(uint8_t * p, size_t length);
 *************************************************************/
 void SPI_flush();
 
+#endif
 
 #endif /* SOURCES_SPI_H_ */
