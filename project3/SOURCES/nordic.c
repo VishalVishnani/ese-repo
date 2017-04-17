@@ -1,9 +1,23 @@
-/*
- * nordic.c
- *
- *  Created on: 22-Mar-2017
- *      Author: Virag Gada
- */
+/*************************************************************************
+* Authors : Vishal Vishnani, Virag Gada
+* Date : 04/12/2017
+*
+* File : nordic.c
+* Description : Source file for nordic functions
+*            	-void nrf_read_register(uint8_t reg)
+*            	-void nrf_write_register(uint8_t reg, uint8_t value)
+*            	-uint8_t nrf_read_status()
+*            	-void nrf_write_config(uint8_t value)
+*				-uint8_t nrf_read_config()
+*				-uint8_t nrf_read_rf_setup()
+*				-void nrf_write_rf_setup(uint8_t value)uint8_t nrf_read_rf_ch()
+*				-void nrf_write_rf_ch(uint8_t channel)
+*				-uint8_t * nrf_read_TX_ADDR()
+*				-void nrf_write_TX_ADDR(uint8_t * tx_addr)
+*				-uint8_t nrf_read_fifo_status()
+*				-void nrf_flush_tx_fifo()
+*				-void nrf_flush_rx_fifo()
+***************************************************************************/
 #include "spi.h"
 #include "nordic.h"
 
