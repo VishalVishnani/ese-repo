@@ -1,9 +1,32 @@
-/*
- * spi.c
- *
- *  Created on: 22-Mar-2017
- *      Author: Virag Gada
- */
+/*************************************************************************
+* Authors : Vishal Vishnani, Virag Gada
+* Date : 04/10/2017
+*
+* File : spi.h
+* Description : Source file for SPI functions
+*            	-void SPI_init()
+*            	-void SPI_read_byte(uint8_t * byte)
+*            	-uint8_t SPI_write_byte(uint8_t byte)
+*            	-void SPI_send_packet(uint8_t * p, size_t length)
+*            	-void SPI_flush()
+***************************************************************************/
+
+#ifndef SOURCES_RTC_H_
+#define SOURCES_RTC_H_
+
+#include <time.h>
+
+#define ADJUSTMENT (21580)
+
+uint8_t * c_time_string;
+
+/*******************************************
+* SPI_init() - Function to initialize RTC
+********************************************/
+void rtc_init(void);
+
+#endif /* SOURCES_RTC_H_ */
+
 
 #include <MKL25Z4.h>
 #include <stdlib.h>
@@ -39,7 +62,8 @@ void SPI_read_byte(uint8_t * byte){
 /*Function to write a byte using SPI*/
 uint8_t SPI_write_byte(uint8_t byte){
 	uint8_t val;
-	while(!(SPI0->S & SPI_S_SPTEF_MASK));
+	//while(!(SPI0->S & SPI_S_SPTEF_MASK));
+	SPI_flush();
 	SPI0->D = byte;
 	SPI_read_byte(&val);
 	return val;
@@ -57,5 +81,5 @@ void SPI_send_packet(uint8_t * p, size_t length){
 
 /*Function to block till SPI transmit buffer is empty*/
 void SPI_flush(){
-	while(SPI0->S & SPI_S_SPTEF_MASK == SPI_S_SPTEF_MASK);
+	while(!(SPI0->S & SPI_S_SPTEF_MASK));
 }
