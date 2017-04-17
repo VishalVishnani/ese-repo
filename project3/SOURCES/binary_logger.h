@@ -1,6 +1,6 @@
 /************************************************
 * Authors : Vishal Vishnani, Virag Gada
-* Date : 03/03/2017
+* Date : 04/16/2017
 *
 * File : binary_logger.h
 * Description : Header file for binary logger
@@ -12,18 +12,20 @@
 #ifndef SOURCES_BINARY_LOGGER_H_
 #define SOURCES_BINARY_LOGGER_H_
 
-#define NOERROR 0
+#define NOERROR (0)
 
 /*Enums to be used by Binary Logger*/
 typedef enum Log_ID_Types{
-	LOGGER_INITIALIZED = 1,
+	RTC_INITIALIZED = 1,
+	LOGGER_INITIALIZED,
 	GPIO_INITIALIZED,
+	SPI_INITIALIZED,
 	SYSTEM_INITIALIZED,
-    SYSTEM_HALTED,
+   	SYSTEM_HALTED,
 	INFO,
 	WARNING,
 	LOG_ERROR,
-    DATA_RECEIVED,
+    	DATA_RECEIVED,
 	DATA_ANALYSIS_STARTED,
 	DATA_ALPHA_COUNT,
 	NUMERIC_COUNT,
