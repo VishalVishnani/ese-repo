@@ -1,6 +1,6 @@
 /*************************************************************************
 * Authors : Vishal Vishnani, Virag Gada
-* Date : 04/10/2017
+* Date : 04/27/2017
 *
 * File : spi.h
 * Description : Header file for SPI functions
@@ -33,7 +33,7 @@
 #define ISR_SHIFT (1<<7)
 
 /************************************************************
-* SPI_init() - Function to initialize SPI0 on Port D
+* SPI_init() - Function to initialize SPI1 on Port D
 *              Set master mode and Baud equal to 1 Mbps
 *************************************************************/
 void SPI_init();
